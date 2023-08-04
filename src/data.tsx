@@ -1,4 +1,4 @@
-import { BadgeProps, IconType } from "@chakra-ui/react";
+import { BadgeProps } from "@chakra-ui/react";
 import {
   FaWater,
   FaMountain,
@@ -96,18 +96,28 @@ export type locationData = Record<
   string,
   {
     label: string;
-    icon: IconType;
+    icon: any;
   }
 >;
 
 // fix linting error for icon type
 export const locations: locationData = {
-  pond: { label: "River", icon: FaWater },
+  // starting location
+  campsite: { label: "Campsite", icon: FaTree },
+
+  // water locations
+  pond: { label: "Pond", icon: FaWater },
+  river: { label: "River", icon: FaWater },
+  ocean: { label: "Ocean", icon: FaWater },
+  beach: { label: "Beach", icon: FaUmbrellaBeach },
+
+  // land locations
   mine: { label: "Mine", icon: FaMountain },
   forest: { label: "Forest", icon: FaTree },
+
+  // town locations
   town: { label: "Town", icon: FaCity },
   dungeon: { label: "Dungeon", icon: FaSkull },
-  beach: { label: "Beach", icon: FaUmbrellaBeach },
   castle: { label: "Castle", icon: FaCity },
 };
 
@@ -187,51 +197,6 @@ export const monsters = {
     gold: 40,
   },
 };
-
-export type InvItem = {
-  id: string;
-  amt: number;
-};
-
-export class Inventory {
-  public items: InvItem[];
-
-  constructor(items: InvItem[] = []) {
-    this.items = items;
-  }
-
-  public add(id: string, amt = 1): void {
-    const existingItem = this.items.find((item) => item.id === id);
-    if (existingItem) {
-      existingItem.amt += amt;
-    } else {
-      this.items.push({ id, amt });
-    }
-  }
-
-  public remove(id: string, amt = 1): void {
-    const existingItem = this.items.find((item) => item.id === id);
-    if (existingItem) {
-      existingItem.amt -= amt;
-      if (existingItem.amt <= 0) {
-        this.items = this.items.filter((item) => item.id !== id);
-      }
-    }
-  }
-
-  public getItemAmount(id: string): number {
-    const existingItem = this.items.find((item) => item.id === id);
-    return existingItem ? existingItem.amt : 0;
-  }
-
-  public hasItem(id: string): boolean {
-    return this.items.some((item) => item.id === id);
-  }
-
-  public get(): InvItem[] {
-    return this.items;
-  }
-}
 
 export type ActionData = Record<
   string,

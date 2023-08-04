@@ -5,3 +5,12 @@
 body {
   background-color: #fafafa !important;
 }
+
+.table {
+  @apply border-collapse table-auto w-full;
+}
+
+/* Add these utility classes to your table cells (td) */
+td {
+  @apply px-4 py-2 m-1 border border-black text-center cursor-pointer hover:bg-gray-100;
+}
