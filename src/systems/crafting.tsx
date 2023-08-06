@@ -1,4 +1,5 @@
-import { Inventory, itemData } from "../data";
+import { itemData } from "../data";
+import { Inventory } from "./inventory";
 
 export const craftingRecipes: Record<string, Record<string, number>> = {
   pickaxe: {

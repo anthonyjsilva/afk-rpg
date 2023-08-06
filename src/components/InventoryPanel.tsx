@@ -11,12 +11,14 @@ interface InventoryPanelProps {
 const InventoryPanel: React.FC<InventoryPanelProps> = ({ inv }) => {
   return (
     <Section title="Inventory">
-      <div className="flex flex-row justify-center space-x-10 p-4 m-4">
+      <div>200 gold</div>
+      <div>{inv.items.length} / 20</div>
+      <div className="flex flex-wrap flex-row justify-start p-4 m-4">
         {inv.items.map(({ id, amt }: InventoryItem) => (
-          <div key={id}>
+          <div key={id} className="m-1">
             <img
               className="rounded-xl"
-              width={100}
+              width={70}
               src={itemData[id].image}
               alt={itemData[id].name}
             />

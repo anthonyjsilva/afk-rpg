@@ -8,6 +8,8 @@ import {
   FaUmbrellaBeach,
 } from "react-icons/fa";
 
+import { GiMining } from "react-icons/gi";
+
 export const typeColorMap: Record<string, BadgeProps["colorScheme"]> = {
   tool: "gray",
   resource: "green",
@@ -205,7 +207,7 @@ export type ActionData = Record<
     color: string;
     item: string;
     chance: number;
-    location: keyof typeof locations;
+    location: string[];
     tool: string;
   }
 >;
@@ -216,7 +218,7 @@ export const actionData: ActionData = {
     color: "blue",
     item: "fish",
     chance: 20,
-    location: "pond",
+    location: ["pond", "river", "beach", "ocean"],
     tool: "net",
   },
   chopping: {
@@ -224,7 +226,7 @@ export const actionData: ActionData = {
     color: "green",
     item: "wood",
     chance: 40,
-    location: "forest",
+    location: ["forest", "campsite"],
     tool: "axe",
   },
   mining: {
@@ -232,23 +234,23 @@ export const actionData: ActionData = {
     color: "gray",
     item: "metal",
     chance: 30,
-    location: "mine",
+    location: ["mine"],
     tool: "pickaxe",
   },
   fighting: {
     label: "Fighting",
-    color: "brown",
+    color: "facebook",
     item: "key",
     chance: 50,
-    location: "dungeon",
+    location: ["dungeon", "castle"],
     tool: "sword",
   },
   exploring: {
-    label: "Exploring",
+    label: "Digging",
     color: "orange",
     item: "chest",
     chance: 10,
-    location: "beach",
+    location: ["beach", "forest", "mine", "campsite"],
     tool: "shovel",
   },
 };

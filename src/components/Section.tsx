@@ -12,7 +12,7 @@ export default function Section({
       <h2 className="text-xl uppercase font-bold border-b pb-2 mb-4 w-2/3 mx-auto">
         {title}
       </h2>
-      <p>{children}</p>
+      <div>{children}</div>
     </div>
   );
 }
