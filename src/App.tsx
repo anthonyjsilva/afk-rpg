@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -19,26 +19,43 @@ import {
 import "./index.css";
 import {
   Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stat,
+  StatArrow,
+  StatGroup,
+  StatHelpText,
+  StatLabel,
+  StatNumber,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
+import ItemsList from "./components/ItemsList";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 function App(): JSX.Element {
-  const { state, dispatch } = useGameState();
-  const [currentPanel, setCurrentPanel] = useState("inventory");
+  const { state } = useGameState();
+  const [isOpen, setIsOpen] = useState(state.currentAction !== "none");
+  const [currentPanel, setCurrentPanel] = useState("character");
 
   const PANELS = {
     CHARACTER: "character",
     INVENTORY: "inventory",
-    // CRAFTING: "crafting",
     QUEST: "quest",
   };
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
 
   const renderSideBarPanel = () => {
     switch (currentPanel) {
@@ -46,15 +63,17 @@ function App(): JSX.Element {
         return <CharacterPanel />;
       case PANELS.INVENTORY:
         return <InventoryPanel inv={state.inv} />;
-      // case PANELS.CRAFTING:
-      //   return <CraftingPanel />;
       case PANELS.QUEST:
         return <QuestPanel />;
-
       default:
         return null;
     }
   };
+
+  // use effect hook that runs when the component mounts
+  // useEffect(() => {
+  //   // check if the user has a saved game in local storage
+  // }, []);
 
   return (
     <div className="m-10 text-center">
@@ -63,6 +82,74 @@ function App(): JSX.Element {
         {` AFK RPG `}
         <i className="ra ra-castle-flag"></i>
       </h1>
+
+      <div className="flex justify-between">
+        <Button
+          onClick={() => {
+            localStorage.removeItem("afkrpg");
+          }}
+          colorScheme="red"
+        >
+          DELETE SAVE
+        </Button>
+        <Button onClick={onOpen}>Show results from last AFK</Button>
+      </div>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>AFK Results</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <div>Since {dayjs(state.afkResults.lastActive).fromNow()}</div>
+            <hr />
+            <div>
+              {state.currentAction} for {state.afkResults.minutes} minutes :
+            </div>
+            <hr />
+
+            <StatGroup>
+              <Stat>
+                <StatLabel>XP</StatLabel>
+                <StatHelpText>
+                  <StatArrow type="increase" />
+                  {state.afkResults.xp}
+                </StatHelpText>
+              </Stat>
+
+              <Stat>
+                <StatLabel>Gold</StatLabel>
+                <StatHelpText>
+                  <StatArrow type="increase" />
+                  {state.afkResults.gold}
+                </StatHelpText>
+              </Stat>
+              <Stat>
+                <StatLabel>Energy</StatLabel>
+                <StatHelpText>
+                  <StatArrow
+                    type={
+                      Math.sign(state.afkResults.energyDiff) > 0
+                        ? "increase"
+                        : "decrease"
+                    }
+                  />
+                  {state.afkResults.energyDiff}
+                </StatHelpText>
+              </Stat>
+            </StatGroup>
+            <hr />
+            <div>Loot:</div>
+            <ItemsList items={state.afkResults.inv.items} />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="green" mr={3} onClick={onClose}>
+              Continue
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <div className="grid grid-cols-6 grid-rows-3 h-screen">
         {/* Main Window */}

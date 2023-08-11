@@ -9,6 +9,10 @@ import {
 } from "react-icons/fa";
 
 import { GiMining } from "react-icons/gi";
+import { hasChance } from "../helpers";
+import itemData from "./itemData";
+
+export { default as itemData } from "./itemData";
 
 export const typeColorMap: Record<string, BadgeProps["colorScheme"]> = {
   tool: "gray",
@@ -22,76 +26,9 @@ export const typeColorMap: Record<string, BadgeProps["colorScheme"]> = {
 
 export type ItemData = {
   name: string;
+  description?: string;
   image: string;
   type: keyof typeof typeColorMap;
-};
-
-export const itemData: Record<string, ItemData> = {
-  wood: {
-    name: "Wood",
-    image: "wood.svg",
-    type: "resource",
-  },
-  metal: {
-    name: "Metal",
-    image: "metal.svg",
-    type: "resource",
-  },
-  fish: {
-    name: "Fish",
-    image: "fish.svg",
-    type: "resource",
-  },
-  potion: {
-    name: "Potion",
-    image: "potion.svg",
-    type: "consumable",
-  },
-  chest: {
-    name: "Chest",
-    image: "chest.svg",
-    type: "loot",
-  },
-  key: {
-    name: "Key",
-    image: "key.svg",
-    type: "key",
-  },
-  sword: {
-    name: "Sword",
-    image: "sword.svg",
-    type: "weapon",
-  },
-  shield: {
-    name: "Shield",
-    image: "shield.svg",
-    type: "armor",
-  },
-  net: {
-    name: "Net",
-    image: "fishing-net.svg",
-    type: "tool",
-  },
-  axe: {
-    name: "Axe",
-    image: "axe.svg",
-    type: "tool",
-  },
-  pickaxe: {
-    name: "Pickaxe",
-    image: "pickaxe.svg",
-    type: "tool",
-  },
-  tent: {
-    name: "Tent",
-    image: "tent.svg",
-    type: "house",
-  },
-  shovel: {
-    name: "Shovel",
-    image: "pickaxe.svg",
-    type: "tool",
-  },
 };
 
 export type locationData = Record<
@@ -203,19 +140,49 @@ export const monsters = {
 export type ActionData = Record<
   string,
   {
+    energyCost?: number;
     label: string;
     color: string;
-    item: string;
+    xp: number;
+    item: string | string[] | null; // Fix the typing here to allow null
     chance: number;
     location: string[];
-    tool: string;
+    tool: string | null; // Fix the typing here to allow null
+    successFn?: (args: { state: SaveData; dispatch: any }) => void; // Fix the typing here to include 'state' parameter
   }
 >;
 
 export const actionData: ActionData = {
+  sleeping: {
+    energyCost: 5,
+    label: "Sleeping",
+    color: "purple",
+    xp: 0,
+    item: null,
+    successFn: ({ dispatch }) => {
+      // dispatch({ type: "SET_ENERGY", payload: 1 });
+      dispatch({
+        type: "ADD_MESSAGE",
+        payload: "success#You sleep well. (+1 Energy)",
+      });
+    },
+    chance: 80,
+    location: [
+      "town",
+      "campsite",
+      "forest",
+      "house",
+      "castle",
+      "pond",
+      "river",
+      "beach",
+    ],
+    tool: "tent",
+  },
   fishing: {
     label: "Fishing",
     color: "blue",
+    xp: 1,
     item: "fish",
     chance: 20,
     location: ["pond", "river", "beach", "ocean"],
@@ -224,6 +191,7 @@ export const actionData: ActionData = {
   chopping: {
     label: "Chopping",
     color: "green",
+    xp: 1,
     item: "wood",
     chance: 40,
     location: ["forest", "campsite"],
@@ -232,26 +200,77 @@ export const actionData: ActionData = {
   mining: {
     label: "Mining",
     color: "gray",
+    xp: 1,
     item: "metal",
     chance: 30,
     location: ["mine"],
     tool: "pickaxe",
   },
   fighting: {
+    energyCost: -2,
     label: "Fighting",
     color: "facebook",
+    xp: 2,
     item: "key",
     chance: 50,
     location: ["dungeon", "castle"],
     tool: "sword",
   },
   exploring: {
-    label: "Digging",
+    energyCost: -5,
+    label: "Exploring",
     color: "orange",
-    item: "chest",
-    chance: 10,
-    location: ["beach", "forest", "mine", "campsite"],
-    tool: "shovel",
+    xp: 1,
+    successFn: ({ state, dispatch }) => {
+      const thisLocation = state.locations[state.locationExplorationIndex];
+      state.locations[
+        state.locationExplorationIndex
+      ].explorationPercentage += 10;
+      dispatch({
+        type: "ADD_MESSAGE",
+        payload: `You manage to explore more of the area. (${thisLocation.explorationPercentage}%)`,
+      });
+
+      if (thisLocation.explorationPercentage === 100) {
+        state.locations[state.locationExplorationIndex].isExplored = true;
+        const xpGain = 25;
+        dispatch({ type: "ADD_XP", payload: xpGain });
+        dispatch({
+          type: "ADD_MESSAGE",
+          payload: `success#You have fully explored the ${thisLocation.name}! (+${xpGain}XP)`,
+        });
+        dispatch({ type: "SET_CURRENT_ACTION", payload: "none" });
+      } else {
+        if (hasChance(50)) {
+          const items = ["key", "gold", "wood", "metal", "fish"];
+          const randomIndex = Math.floor(Math.random() * items.length);
+          const randomItemName = items[randomIndex];
+          state.inv.add(randomItemName);
+
+          dispatch({
+            type: "ADD_MESSAGE",
+            payload: `success#While exploring you find a ${itemData[randomItemName].name}`,
+          });
+        }
+      }
+
+      // if (unexploredLocations.length > 0) {
+      //   const randomIndex = Math.floor(
+      //     Math.random() * unexploredLocations.length
+      //   );
+      //   const newLocation = unexploredLocations[randomIndex];
+
+      //   dispatch({ type: "ADD_LOCATION", payload: newLocation });
+      //   dispatch({
+      //     type: "ADD_MESSAGE",
+      //     payload: `success#You have discovered a new location: ${locations[newLocation].label}!`,
+      //   });
+      // }
+    },
+    item: null, //["key", "gold", "wood", "metal", "fish"],
+    chance: 30,
+    location: ["all"],
+    tool: null,
   },
 };
 

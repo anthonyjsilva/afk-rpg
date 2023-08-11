@@ -8,3 +8,16 @@ export function hasChance(percentage: number) {
 
   return randomNum < threshold; // Return true if the random number is less than the threshold
 }
+
+// Define the base XP required for level 1 and the exponent for XP growth
+const BASE_XP = 100;
+const XP_EXPONENT = 1.5;
+
+// Function to calculate the XP required for a given level
+export const calculateXPRequired = (level) => {
+  return Math.round(BASE_XP * level ** XP_EXPONENT);
+};
+
+export const calculatePercentage = (current, max) => {
+  return Math.round((current / max) * 100);
+};

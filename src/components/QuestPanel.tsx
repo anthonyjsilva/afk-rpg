@@ -2,14 +2,24 @@ import { List, ListItem, ListIcon } from "@chakra-ui/react";
 import { EditIcon, WarningIcon } from "@chakra-ui/icons";
 import { MdCheckCircle, MdSettings } from "react-icons/md";
 import { Section } from "./";
+import { useGameState } from "../GameStateContext";
 
 function QuestPanel() {
+  const { state, dispatch } = useGameState();
+  const thisQuest = state.quests[0];
+
   return (
     <Section title="Quests">
       <List spacing={3}>
         <ListItem>
           <EditIcon />
-          Craft a pickaxe
+
+          <div>{thisQuest.name}</div>
+          <div>{thisQuest.description}</div>
+          <div>{thisQuest.isComplete}</div>
+          <div>
+            step {thisQuest.step}/ {thisQuest.maxStep}
+          </div>
         </ListItem>
         <ListItem>
           <ListIcon as={MdCheckCircle} color="green.500" />

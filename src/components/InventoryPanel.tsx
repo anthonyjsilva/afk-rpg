@@ -1,38 +1,24 @@
-import { Badge } from "@chakra-ui/react";
-
+import { useGameState } from "../GameStateContext";
 import Section from "./Section";
-import { itemData, typeColorMap } from "../data";
-import { InventoryItem, Inventory } from "../systems/inventory";
+import { Inventory } from "../systems/inventory";
+import ItemsList from "./ItemsList";
 
 interface InventoryPanelProps {
   inv: Inventory;
 }
 
 const InventoryPanel: React.FC<InventoryPanelProps> = ({ inv }) => {
+  const { state } = useGameState();
+
   return (
     <Section title="Inventory">
-      <div>200 gold</div>
-      <div>{inv.items.length} / 20</div>
-      <div className="flex flex-wrap flex-row justify-start p-4 m-4">
-        {inv.items.map(({ id, amt }: InventoryItem) => (
-          <div key={id} className="m-1">
-            <img
-              className="rounded-xl"
-              width={70}
-              src={itemData[id].image}
-              alt={itemData[id].name}
-            />
+      <div>Currency:</div>
+      <div>{state.gold} gold</div>
 
-            <p>
-              {itemData[id].name}{" "}
-              {amt > 1 && <span className="italic">(x{amt})</span>}
-            </p>
-            <Badge colorScheme={typeColorMap[itemData[id].type]}>
-              {itemData[id].type}
-            </Badge>
-          </div>
-        ))}
-      </div>
+      <div>Capacity:</div>
+      <div>{inv.items.length} / 20</div>
+
+      <ItemsList items={inv.items} />
     </Section>
   );
 };

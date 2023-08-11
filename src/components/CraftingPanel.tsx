@@ -3,27 +3,10 @@ import Section from "./Section";
 
 import { useGameState } from "../GameStateContext";
 
-import { itemData } from "../data";
+import { itemData } from "../data/data";
 import { Inventory } from "../systems/inventory";
-
-export const craftingRecipes: Record<string, Record<string, number>> = {
-  pickaxe: {
-    metal: 5,
-    wood: 5,
-  },
-  axe: {
-    metal: 5,
-    wood: 5,
-  },
-  chest: {
-    wood: 100,
-    metal: 100,
-  },
-  sword: {
-    metal: 50,
-    wood: 50,
-  },
-};
+import { craftingRecipes } from "../systems/crafting";
+import { useState } from "react";
 
 // Function to check if an item can be crafted based on the current inventory
 export const canCraftItem = (
@@ -49,6 +32,9 @@ const statusColors = {
 
 const CraftingPanel: React.FC = () => {
   const { state, dispatch } = useGameState();
+
+  const [selectedRecipe, setSelectedRecipe] = useState<string | null>(null);
+
   const addMessage = (message: string) => {
     dispatch({ type: "ADD_MESSAGE", payload: message });
   };
@@ -88,12 +74,15 @@ const CraftingPanel: React.FC = () => {
       <div className="flex flex-wrap justify-start align-top">
         {Object.keys(craftingRecipes).map((itemName) => {
           const recipe = craftingRecipes[itemName];
-          const canCraft = canCraftItem(recipe, state.inv);
+          const isSelected = selectedRecipe === itemName;
 
           return (
             <div
               key={itemName}
-              className="p-2 m-2 flex flex-col flex-grow justify-start items-center border rounded border-stone-500"
+              className={`p-2 m-2 flex flex-col flex-grow justify-start items-center border rounded ${
+                isSelected ? "bg-gray-200 border-stone-500" : ""
+              }`}
+              onClick={() => setSelectedRecipe(isSelected ? null : itemName)}
             >
               <div className="flex">
                 <img
@@ -125,17 +114,34 @@ const CraftingPanel: React.FC = () => {
                   }
                 )}
               </div>
-
-              <Button
-                isDisabled={!canCraft}
-                colorScheme={canCraft ? "green" : "gray"}
-                onClick={() => craftItem(itemName, recipe, state.inv)}
-              >
-                Craft
-              </Button>
             </div>
           );
         })}
+      </div>
+
+      <div className="p-2 m-2 flex flex-col flex-grow justify-start items-center border rounded">
+        <Button
+          isDisabled={
+            !selectedRecipe ||
+            !canCraftItem(craftingRecipes[selectedRecipe], state.inv)
+          }
+          colorScheme={
+            canCraftItem(craftingRecipes[selectedRecipe], state.inv)
+              ? "green"
+              : "gray"
+          }
+          onClick={() => {
+            if (selectedRecipe) {
+              craftItem(
+                selectedRecipe,
+                craftingRecipes[selectedRecipe],
+                state.inv
+              );
+            }
+          }}
+        >
+          Craft
+        </Button>
       </div>
     </Section>
   );

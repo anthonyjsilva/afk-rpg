@@ -1,14 +1,20 @@
-import { itemData } from "../data";
+import { itemData } from "../data/data";
 import { Inventory } from "./inventory";
 
 export const craftingRecipes: Record<string, Record<string, number>> = {
+  net: {
+    wood: 10,
+  },
   pickaxe: {
-    metal: 1,
-    wood: 1,
+    metal: 5,
+    wood: 5,
   },
   axe: {
-    metal: 50,
-    wood: 20,
+    metal: 5,
+    wood: 5,
+  },
+  tent: {
+    wood: 50,
   },
   chest: {
     wood: 100,
