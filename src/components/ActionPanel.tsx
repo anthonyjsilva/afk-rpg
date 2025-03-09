@@ -143,53 +143,6 @@ function ActionPanel(): JSX.Element {
         </p>
         {isActionInProgress && <Progress size="lg" isIndeterminate />}
       </div>
-
-      <div className="">
-        {mapActionData(actionData, (key, value) => {
-          const isShown =
-            key !== "change" &&
-            (value.location.includes(state.currentLocation) ||
-              value.location.includes("all"));
-
-          if (!isShown) {
-            return null;
-          } else {
-            let isDisabled = false;
-            if (value.tool !== null && !state.inv.hasItem(value.tool)) {
-              isDisabled = true;
-            }
-
-            let colorScheme = isDisabled ? "gray" : "blue";
-            colorScheme =
-              isActionInProgress && state.currentAction === key
-                ? "red"
-                : "blue";
-            const text =
-              isActionInProgress && state.currentAction === key
-                ? `Stop ${value.label}`
-                : `${value.label}`;
-
-            return (
-              <div key={key} className="mb-4">
-                <Button
-                  leftIcon={<GiMining />}
-                  isDisabled={isDisabled}
-                  colorScheme={colorScheme}
-                  onClick={() => {
-                    isActionInProgress ? endAction() : startAction(key);
-                  }}
-                >
-                  {text}
-                </Button>
-
-                {isDisabled && (
-                  <p className="text-red-400">requires {value.tool}</p>
-                )}
-              </div>
-            );
-          }
-        })}
-      </div>
     </Section>
   );
 }

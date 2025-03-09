@@ -27,6 +27,7 @@ function CharacterPanel() {
       <Stack spacing={3}>
         <div>
           <div className="text-2xl font-bold">John the {state.path}</div>
+          <div className="text-2xl font-bold">{state.age} years old</div>
 
           <div className="text-lg">Passives</div>
           <ul className="border">

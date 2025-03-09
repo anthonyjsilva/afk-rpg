@@ -28,6 +28,7 @@ interface SaveData {
   };
   xp: number;
   level: number;
+  age: number;
   gold: number;
   inv: Inventory;
   path: string;

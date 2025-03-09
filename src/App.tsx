@@ -162,29 +162,10 @@ function App(): JSX.Element {
             </div>
           </div>
         </div>
-
         {/* Side Window */}
         <div className="col-span-2">
-          {/* Nav Bar */}
-          <Section title="Menu">
-            <Tabs variant="soft-rounded">
-              <TabList className="flex flex-wrap">
-                {/* Use .map to loop over the panel names and render buttons */}
-                {Object.entries(PANELS).map(([panelName, panelValue]) => (
-                  <Tab
-                    key={panelName}
-                    onClick={() => setCurrentPanel(panelValue)}
-                  >
-                    {" "}
-                    {panelName.charAt(0).toUpperCase() + panelName.slice(1)}
-                  </Tab>
-                ))}
-              </TabList>
-            </Tabs>
-          </Section>
-
-          <div className="p-2">{renderSideBarPanel()}</div>
-          <CraftingPanel />
+          <CharacterPanel />
+          <InventoryPanel inv={state.inv} />
         </div>
 
         {/* Panel at the bottom */}

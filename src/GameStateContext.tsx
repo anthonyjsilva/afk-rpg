@@ -90,6 +90,7 @@ const initialState: SaveData = {
     },
   ],
   path: "Lumberjack",
+  age: 18,
 };
 
 const loadSaveData = (): SaveData => {
